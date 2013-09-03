@@ -22,7 +22,7 @@
 * @brief This program gets the VTK files, assigns the appropriate VTK
 *        rectilinear file to the appropriate process, passes the data
 *        through vtkContourFilter, which outputs the resulting VTK polydata, 
-*        and then conglomerates the data into 1 vtk file in the master process.
+*        and then conglomerates the data into 1 vtk file in the parent process.
 * @param[in] number of processes - number of processes for MPI (look at README 
              for more information)
 * @param[in] argv[1] - the output's filename
@@ -85,7 +85,6 @@ void process(int procRank, int procSize, vtkMPIController* procController, const
     //VT_USER_END("Region 1");
     //VT_OFF();
 
-
     vtkRectilinearGridReader *reader = vtkRectilinearGridReader::New();
 
     reader->SetFileName(prefix_suffix);
@@ -117,16 +116,10 @@ void process(int procRank, int procSize, vtkMPIController* procController, const
 
     contour->Update();
 
-    vtkPolyData *smoothed_polys = contour->GetOutput();
-
     // calc cell normal
     vtkPolyDataNormals *triangleCellNormals= vtkPolyDataNormals::New();
 
-    #if VTK_MAJOR_VERSION <= 5
-        triangleCellNormals->SetInputConnection(contour->GetOutputPort());
-    #else
-        triangleCellNormals->SetInputData(smoothed_polys);   
-    #endif
+    triangleCellNormals->SetInputConnection(contour->GetOutputPort());
 
     triangleCellNormals->ComputeCellNormalsOn();
     triangleCellNormals->ComputePointNormalsOff();
@@ -134,21 +127,18 @@ void process(int procRank, int procSize, vtkMPIController* procController, const
     triangleCellNormals->AutoOrientNormalsOn();
     triangleCellNormals->Update(); // creates vtkPolyData
 
-    // send the vtkPolyData to the master process
-    #if VTK_MAJOR_VERSION <= 5
-        procController->Send(triangleCellNormals->GetOutput(), 0, 101);
-    #else
-        procController->Send(triangleCellNormals->GetOutputPort(), 0, 101);  
-    #endif
+    // send the vtkPolyData to the parent process
+    procController->Send(triangleCellNormals->GetOutput(), 0, 101);
 }
 
 /**
- * This program converts a vtkPolyData image into volume representation 
- * (vtkImageData) where the foreground voxels are 1 and the background 
- * voxels are 0. Internally vtkPolyDataToImageStencil is utilized as 
- * as MPI. The resultant image is saved as metaimage data. vtkMarchingCubes 
- * is applied to these pieces of data, which are then conglomerated by the 
- * master process, and an output vtk file is outputted.
+ * This program takes in vtkRectilinear files and assigns the appropriate
+ * file (which is numbered) with the appropriate child processor. In each 
+ * child processor, vtkContourFilter is applied to the piece of data, and 
+ * a vtk polydata is outputted and sent to the parent processor. During this
+ * time, the parent processor is waiting to receive this data from the child
+ * processors. The parent processor conglomerates the data, and an output vtk 
+ * polydata file is outputted.
  */
 int main(int argc, char *argv[])
 {
@@ -165,14 +155,14 @@ int main(int argc, char *argv[])
     /* Figure out the rank of this processor */
     int size = controller->GetNumberOfProcesses();
 
-    // If not master process, do the vtkMarchingCubes implementation
+    // If not parent process, do the vtkContourFilter implementation
     if (rank != 0)
     {
         const char* prefix = argv[2];
         process(rank, size, controller, prefix);
     }
 
-    // Master
+    // Parent
     else
     {   
         // to append each piece into 1 big vtk file
@@ -188,23 +178,17 @@ int main(int argc, char *argv[])
             
             controller->Receive(pd, k, 101);
 
-            #if VTK_MAJOR_VERSION <= 5
-                appendWriter->AddInput(pd);
-            #else
-                appendWriter->AddInputData(pd);
-            #endif
+            appendWriter->AddInput(pd);
 
             appendWriter->Update();
+
+            pd->Delete();
         }
 
         vtkPolyDataWriter *pWriter = vtkPolyDataWriter::New();
         pWriter->SetFileName(argv[1]);
 
-        #if VTK_MAJOR_VERSION <= 5
-            pWriter->SetInput(appendWriter->GetOutput());
-        #else
-            pWriter->SetInputData(appendWriter->GetOutputPort());
-        #endif
+        pWriter->SetInput(appendWriter->GetOutput());
 
         // output vtk file
         pWriter->Write();

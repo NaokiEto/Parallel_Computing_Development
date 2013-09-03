@@ -44,7 +44,7 @@ for i in `seq 1 $NUMREPETITIONS`;
         cd $NUMCHILD$MPI/$MPI$NUMCHILD$TRIAL$ZERO$i
 
         # Run the code 
-        mpirun -np "$NUMPROCESSES" ./../../build/ApplyingVtkMarchingCubes "$FILENAMEVTK" "$PREFIX"
+        mpirun -np "$NUMPROCESSES" ./../../build/ApplyingVtkContourFilter "$FILENAMEVTK" "$PREFIX"
 
         # Remove the original vtk file
         rm $f
