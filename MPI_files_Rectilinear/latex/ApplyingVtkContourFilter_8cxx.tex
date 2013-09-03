@@ -1,0 +1,76 @@
+\hypertarget{ApplyingVtkContourFilter_8cxx}{\section{\-Applying\-Vtk\-Contour\-Filter.\-cxx \-File \-Reference}
+\label{ApplyingVtkContourFilter_8cxx}\index{\-Applying\-Vtk\-Contour\-Filter.\-cxx@{\-Applying\-Vtk\-Contour\-Filter.\-cxx}}
+}
+
+
+\-This program gets the \-V\-T\-K files, assigns the appropriate \-V\-T\-K rectilinear file to the appropriate process, passes the data through vtk\-Contour\-Filter, which outputs the resulting \-V\-T\-K polydata. \-The data is written in temporary files, which are sent to the parent process (rank 0), which then conglomerates the data in the temporary files into 1 vtk file.  
+
+
+{\ttfamily \#include $<$vtk\-Smart\-Pointer.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Poly\-Data.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Poly\-Data\-Reader.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Point\-Data.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Poly\-Data\-Normals.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Poly\-Data\-Writer.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Append\-Poly\-Data.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Clean\-Poly\-Data.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Contour\-Filter.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Points.\-h$>$}\*
+{\ttfamily \#include \char`\"{}/work2/vt-\/system-\/install/include/vampirtrace/vt\-\_\-user.\-h\char`\"{}}\*
+{\ttfamily \#include $<$mpi.\-h$>$}\*
+{\ttfamily \#include $<$stdio.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Rectilinear\-Grid.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Rectilinear\-Grid\-Reader.\-h$>$}\*
+{\ttfamily \#include $<$time.\-h$>$}\*
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{ApplyingVtkContourFilter_8cxx_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-This program gets the \-V\-T\-K files, assigns the appropriate \-V\-T\-K rectilinear file to the appropriate process, passes the data through vtk\-Contour\-Filter, which outputs the resulting \-V\-T\-K polydata. \-The data is written in temporary files, which are sent to the parent process (rank 0), which then conglomerates the data in the temporary files into 1 vtk file. \-Do whatever you want with public license \-Version 2, \-September 3, 2013
+
+\-Copyright (\-C) 2013 \-Naoki \-Eto $<$\href{mailto:neto@lbl.gov}{\tt neto@lbl.\-gov}$>$
+
+\-Everyone is permitted to copy and distribute verbatim or modified copies of this license document, and changing it is allowed as long as the name is changed.
+
+\-Do whatever you want with the public license
+
+\-T\-E\-R\-M\-S \-A\-N\-D \-C\-O\-N\-D\-I\-T\-I\-O\-N\-S \-F\-O\-R \-C\-O\-P\-Y\-I\-N\-G, \-D\-I\-S\-T\-R\-I\-B\-U\-T\-I\-O\-N \-A\-N\-D \-M\-O\-D\-I\-F\-I\-C\-A\-T\-I\-O\-N
+
+0. \-You just do what you want to do. 1. \-Uses \-V\-T\-K\-\_\-\-M\-A\-J\-O\-R\-\_\-\-V\-E\-R\-S\-I\-O\-N $<$= 5
+
+\begin{DoxyAuthor}{\-Author}
+\-Naoki \-Eto 
+\end{DoxyAuthor}
+\begin{DoxyDate}{\-Date}
+\-September 3, 2013 
+\end{DoxyDate}
+
+\begin{DoxyParams}[1]{\-Parameters}
+\mbox{\tt in}  & {\em number} & of processes -\/ number of processes for \-M\-P\-I (look at \-R\-E\-A\-D\-M\-E for more information) \\
+\hline
+\mbox{\tt in}  & {\em argv\mbox{[}1\mbox{]}} & -\/ the output's filename \\
+\hline
+\mbox{\tt in}  & {\em argv\mbox{[}2\mbox{]}} & -\/ the prefix of the files (i.\-e. 27noise.\-vtk.) \\
+\hline
+\mbox{\tt out}  & {\em p\-Writer} & -\/ vtk\-Poly\-Data file with the output's filename \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+-\/ \-E\-X\-I\-T\-\_\-\-S\-U\-C\-C\-E\-S\-S at the end 
+\end{DoxyReturn}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{ApplyingVtkContourFilter_8cxx_a0ddf1224851353fc92bfbff6f499fa97}{\index{\-Applying\-Vtk\-Contour\-Filter.\-cxx@{\-Applying\-Vtk\-Contour\-Filter.\-cxx}!main@{main}}
+\index{main@{main}!ApplyingVtkContourFilter.cxx@{\-Applying\-Vtk\-Contour\-Filter.\-cxx}}
+\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf main} (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ApplyingVtkContourFilter_8cxx_a0ddf1224851353fc92bfbff6f499fa97}
+\-This program takes in vtk\-Rectilinear files and assigns the appropriate file (which is numbered) with the appropriate child processor. \-In each child processor, vtk\-Contour\-Filter is applied to the piece of data, and a vtk polydata is outputted and sent to the parent processor. \-During this time, the parent processor is waiting to receive this data from the child processors. \-The parent processor conglomerates the data, and an output vtk polydata file is outputted. 

@@ -13,6 +13,7 @@
 * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 *
 * 0. You just do what you want to do.
+* 1. Uses VTK_MAJOR_VERSION <= 5
 * 
 */
 /**
@@ -136,8 +137,7 @@ int main(int argc, char *argv[])
 
         // Create a grid
         vtkSmartPointer<vtkRectilinearGrid> grid = reader->GetOutput();
-
-        vtkDataArray* dim;
+        reader->Delete();
 
         vtkPointData* pointdata = grid->GetPointData();
 
@@ -185,6 +185,9 @@ int main(int argc, char *argv[])
         // Send this temporary file name to the master process
         MPI_Send(strPD, NumOfCharPD, MPI_CHAR, 0, 1, MPI_COMM_WORLD);
 
+        triangleCellNormals->Delete();
+        pointdata->Delete();
+
         VT_USER_END("Region 4");
         VT_OFF();
     }
@@ -228,6 +231,9 @@ int main(int argc, char *argv[])
             remove(strPDMASTER);
 
             appendWriter->Update();
+
+            reader->Delete();
+            inputNum->Delete();
         }
 
         // output vtkpolydata file

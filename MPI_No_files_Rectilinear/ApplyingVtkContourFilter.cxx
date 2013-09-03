@@ -13,6 +13,7 @@
 * TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 *
 * 0. You just do what you want to do.
+* 1. Uses VTK_MAJOR_VERSION <= 5
 * 
 */
 /**
@@ -92,8 +93,7 @@ void process(int procRank, int procSize, vtkMPIController* procController, const
 
     // Create a grid
     vtkSmartPointer<vtkRectilinearGrid> grid = reader->GetOutput();
-
-    vtkDataArray* dim;
+    reader->Delete();
 
     vtkPointData* pointdata = grid->GetPointData();
 
@@ -129,6 +129,9 @@ void process(int procRank, int procSize, vtkMPIController* procController, const
 
     // send the vtkPolyData to the parent process
     procController->Send(triangleCellNormals->GetOutput(), 0, 101);
+
+    triangleCellNormals->Delete();
+    pointdata->Delete();
 }
 
 /**
