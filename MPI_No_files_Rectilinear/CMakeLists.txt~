@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-PROJECT(ApplyingVtkMarchingCubes)
+PROJECT(ApplyingVtkContourFilter)
 
 set(VAMPIRTRACE_ROOT $ENV{ROOT}/work2/vt-system-install)
 set(VAMPIRTRACE_LIBRARIES ${VAMPIRTRACE_ROOT}/lib/libotfaux.so
@@ -16,7 +16,7 @@ include(${VTK_USE_FILE})
 
 add_executable(ApplyingVtkMarchingCubes ApplyingVtkMarchingCubes.cxx)
 
-SET(CMAKE_C_COMPILER mpicc-vt)
+SET(CMAKE_C_COMPILER mpicc)
 
 SET(CMAKE_CXX_COMPILER mpicxx)
 

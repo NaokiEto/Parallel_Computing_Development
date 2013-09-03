@@ -1,6 +1,6 @@
 /**
 * Do whatever you want with public license
-* Version 1, August 11, 2013
+* Version 2, September 3, 2013
 *
 * Copyright (C) 2013 Naoki Eto <neto@lbl.gov>
 *
@@ -16,82 +16,39 @@
 * 
 */
 /**
-* @file ApplyingVtkMarchingCubes.cxx
+* @file ApplyingVtkContourFilter.cxx
 * @author Naoki Eto
-* @date August 12, 2013
-* @brief This program gets the VTK file,  divides up it up, and performs MPI. 
-*        It convert each piece to metaimage data so that vtkMarchingCubes 
-*        class can be applied, apply marching cubes to each process, outputs 
-*        the resulting vtk data, and then conglomerates the data into 1 vtk 
-*        file in the master process.
+* @date September 3, 2013
+* @brief This program gets the VTK files, assigns the appropriate VTK
+*        rectilinear file to the appropriate process, passes the data
+*        through vtkContourFilter, which outputs the resulting VTK polydata, 
+*        and then conglomerates the data into 1 vtk file in the master process.
 * @param[in] number of processes - number of processes for MPI (look at README 
              for more information)
 * @param[in] argv[1] - the output's filename
+* @param[in] argv[2] - the prefix of the files (i.e. 27noise.vtk.)
 * @param[out] pWriter - vtkPolyData file with the output's filename
 * @return - EXIT_SUCCESS at the end
 */
 
-#include <dirent.h>
-#include <vector>
-
-#include <vtkVersion.h>
 #include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
 #include <vtkPolyDataReader.h>
-#include <vtkImageData.h>
-#include <vtkPolyDataToImageStencil.h>
-#include <vtkImageStencil.h>
 #include <vtkPointData.h>
-#include <string.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkExtractVOI.h>
-#include <vtkMarchingCubes.h>
-#include <vtkWindowedSincPolyDataFilter.h>
-#include <vtkDataArray.h>
-#include <vtkLookupTable.h>
 #include <vtkPolyDataNormals.h>
 #include <vtkPolyDataWriter.h>
 #include <vtkAppendPolyData.h>
 #include <vtkCleanPolyData.h>
-#include <vtkActor.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
 #include <vtkMPIController.h>
-#include <vtkCellData.h>
-#include <vtkImageData.h>
-#include <vtkPointData.h>
-#include <vtkDecimatePro.h>
-#include <vtkSmoothPolyDataFilter.h>
+#include <vtkPolyData.h>
 
 #include <mpi.h>//"/home/users/neto/mpich2-1.4.1p1-install/include/mpi.h"
 #include <stdio.h>
 #include "/work2/vt-system-install/include/vampirtrace/vt_user.h"
-#include <stdlib.h>
 
-#include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
-#include <vtkCellArray.h>
-#include <vtkDataSetSurfaceFilter.h>
-#include <vtkPointSource.h>
-#include <vtkPolyDataWriter.h>
-#include <vtkAppendPolyData.h>
-#include <vtkDataReader.h>
-#include <vtkUnstructuredGrid.h>
-
-#include <vtkVersion.h>
-#include <vtkSmartPointer.h>
 #include <vtkRectilinearGrid.h>
-#include <vtkRectilinearGridToTetrahedra.h>
 #include <vtkRectilinearGridReader.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkMath.h>
-#include <vtkDoubleArray.h>
 #include <vtkContourFilter.h>
-#include <vtkRectilinearGridGeometryFilter.h>
-#include <vtkDataSetMapper.h>
 #include <vtkPoints.h>
-#include <algorithm> 
 
 #include <time.h>
 
@@ -183,31 +140,6 @@ void process(int procRank, int procSize, vtkMPIController* procController, const
     #else
         procController->Send(triangleCellNormals->GetOutputPort(), 0, 101);  
     #endif
-
-/*
-
-    //rendering functions
-
-    vtkPolyDataMapper* contourMapper = vtkPolyDataMapper::New();
-    contourMapper->SetInput(triangleCellNormals->GetOutput());
-
-     vtkActor* contourActor = vtkActor::New();
-     contourActor->SetMapper(contourMapper);
-
-    // Create a renderer, render window, and interactor
-    vtkRenderer* renderer = vtkRenderer::New();
-    vtkRenderWindow *renderWindow = vtkRenderWindow::New();
-    vtkRenderWindowInteractor *renderWindowInteractor = vtkRenderWindowInteractor::New();
-
-    // Add the actors to the scene
-    renderWindow->AddRenderer(renderer);
-    renderWindowInteractor->SetRenderWindow(renderWindow);
-    renderer->AddActor(contourActor);
-
-    // Render and interact
-    renderWindow->Render();
-    renderWindowInteractor->Start();
-*/
 }
 
 /**
