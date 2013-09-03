@@ -40,7 +40,7 @@ for i in $(seq 1 $NUMREPETITIONS)
         cd $NUMTHREADS$PTHREADS/$PTHREADS$NUMTHREADS$TRIAL$ZERO$i
 
         # Run the code 
-        ./../../build/ApplyingVtkMarchingCubes "$NUMTHREADS" "$FILENAMEVTK"
+        ./../../build/ApplyingVtkMarchingCubes "$NUMTHREADS" "$FILENAMEVTK" "$PREFIX"
 
         # Remove the original vtk file
         # rm $f
