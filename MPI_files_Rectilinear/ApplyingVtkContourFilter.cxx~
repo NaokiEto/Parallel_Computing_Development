@@ -228,9 +228,6 @@ int main(int argc, char *argv[])
 
         pWriter->Write();
 
-        VT_USER_END("Region 5");
-        VT_OFF();
-
         double t2 = MPI_Wtime();
 
         double time = t2 - t1;
@@ -241,10 +238,13 @@ int main(int argc, char *argv[])
 
         char strPD[6];
 
-        sprintf(strPD, "%f \n", time);
+	snprintf(strPD, 7, "%f \n", time);
 
         fputs(strPD, out_file);
         fclose(out_file);
+
+	//free(strPD);
+
     }
 
     MPI_Finalize();    
