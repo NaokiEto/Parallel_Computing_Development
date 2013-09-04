@@ -6,7 +6,7 @@ appropriate child processor. Child processor reads the file and passes the
 data through vtkContourFilter. vtk polydata is outputted and then sent to 
 the parent processor which is waiting this whole time for the child 
 processor to send the data. The parent processor then conglomerates all 
-the data into 1 vtk polydata file.
+the data into 1 vtk polydata file. The time is outputted into a file.
 
 To run this program without bash script, we can do
 

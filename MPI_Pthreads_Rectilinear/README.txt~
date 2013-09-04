@@ -25,6 +25,6 @@ where the main processor does not)
 
 To run this program with the bash script, we can do
 
-sh LetsBashBig.sh 8 AllStars.vtk 27noise.vtk. 10
+sh LetsBashBig.sh 3 8 AllStars.vtk 27noise.vtk. 10
 
 which would repeat the program 10 times

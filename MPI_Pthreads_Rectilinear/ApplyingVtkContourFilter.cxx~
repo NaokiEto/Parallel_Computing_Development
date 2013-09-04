@@ -27,7 +27,7 @@
 *        thread, which then conglomerates the data into 1 vtk polydata. The
 *        parent thread then sends this data to the parent processor, which
 *        conglomerates all the data from all the parent pthreads into 1 vtk
-*        polydata file. The time is printfed into the command line terminal. 
+*        polydata file.
 * @param[in] argv[1] - number of threads for pthreading (look at 
 *            README for more information)
 * @param[in] argv[2] - the output's filename

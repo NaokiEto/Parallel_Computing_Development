@@ -7,7 +7,8 @@ passes the data through vtkContourFilter. vtk polydata is outputted and
 then sent to the parent pthread. The parent pthread then conglomerates all 
 the data into 1 vtk polydata file. The parent pthread then sends this data 
 to the parent processor which conglomerates all of the data from the 
-parent pthreads into 1 vtk polydata file.
+parent pthreads into 1 vtk polydata file. The time is printfed into the 
+command line terminal.
 
 To run this program without bash script, we can do
 

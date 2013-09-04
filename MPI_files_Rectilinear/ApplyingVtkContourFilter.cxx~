@@ -186,6 +186,7 @@ int main(int argc, char *argv[])
         MPI_Send(strPD, NumOfCharPD, MPI_CHAR, 0, 1, MPI_COMM_WORLD);
 
         triangleCellNormals->Delete();
+        pointdata->Delete();
 
         VT_USER_END("Region 4");
         VT_OFF();

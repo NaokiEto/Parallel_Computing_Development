@@ -24,7 +24,8 @@
 *        rectilinear file to the appropriate pthread (or POSIX thread), 
 *        passes the data through vtkContourFilter, which outputs the resulting 
 *        VTK polydata. The data is sent to the parent thread, which then 
-*        conglomerates the data into 1 vtk polydata file.
+*        conglomerates the data into 1 vtk polydata file. The time is printfed
+*        into the command line terminal. 
 * @param[in] argv[1] - number of threads for pthreading (look at 
 *            README for more information)
 * @param[in] argv[2] - the output's filename

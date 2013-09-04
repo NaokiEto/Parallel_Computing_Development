@@ -131,6 +131,7 @@ void process(int procRank, int procSize, vtkMPIController* procController, const
     procController->Send(triangleCellNormals->GetOutput(), 0, 101);
 
     triangleCellNormals->Delete();
+    pointdata->Delete();
 }
 
 /**

@@ -7,7 +7,7 @@ data through vtkContourFilter. vtk polydata is outputted and then written
 to a vtkpolydata temporary file. The file is then sent to the parent 
 processor which is waiting this whole time for the child processor to send
 the file. The parent processor then conglomerates all the files into 1 
-vtk polydata file.
+vtk polydata file. The time is outputted into a file.
 
 To run this program without bash script, we can do
 

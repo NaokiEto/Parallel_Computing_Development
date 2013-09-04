@@ -25,7 +25,7 @@
 *        through vtkContourFilter, which outputs the resulting VTK polydata.
 *        The data is written in temporary files, which are sent to the parent
 *        process (rank 0), which then conglomerates the data in the temporary
-*        files into 1 vtk file.
+*        files into 1 vtk file. The time is outputted into a file.
 * @param[in] number of processes - number of processes for MPI (look at README 
              for more information)
 * @param[in] argv[1] - the output's filename

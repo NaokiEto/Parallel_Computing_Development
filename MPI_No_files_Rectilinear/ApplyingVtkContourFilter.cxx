@@ -24,6 +24,7 @@
 *        rectilinear file to the appropriate process, passes the data
 *        through vtkContourFilter, which outputs the resulting VTK polydata, 
 *        and then conglomerates the data into 1 vtk file in the parent process.
+*        The time is outputted into a file.
 * @param[in] number of processes - number of processes for MPI (look at README 
              for more information)
 * @param[in] argv[1] - the output's filename

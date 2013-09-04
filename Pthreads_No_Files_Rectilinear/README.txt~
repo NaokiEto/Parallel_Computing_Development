@@ -3,11 +3,9 @@ following steps:
 
 get the VTK rectilinear files, assign the appropriate numbered file to the
 appropriate pthreads. The pthread reads the file and passes the
-data through vtkContourFilter. vtk polydata is outputted and then written 
-to a vtkpolydata temporary file. The file is then sent to the parent 
-pthread which is waiting this whole time for the child pthreads to send
-the files. The parent pthread then conglomerates all the files into 1 
-vtk polydata file.
+data through vtkContourFilter. vtk polydata is outputted and then sent to 
+the parent pthread. The parent pthread then conglomerates all the files 
+into 1 vtk polydata file.
 
 To run this program without bash script, we can do
 
@@ -17,7 +15,8 @@ So, for example,
 
 ./build/ApplyingVtkContourFilter 8 AllStars.vtk 27noise.vtk.
 
-(there are 8 total threads here)
+(there are 8 total threads here, each thread takes a file, unlike MPI,
+where the main processor does not)
 
 
 To run this program with the bash script, we can do

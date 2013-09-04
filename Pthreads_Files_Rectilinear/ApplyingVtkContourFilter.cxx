@@ -25,7 +25,8 @@
 *        passes the data through vtkContourFilter, which outputs the resulting 
 *        VTK polydata. The data is written in temporary files, which are sent 
 *        the parent thread, which then conglomerates the data in the temporary
-*        files into 1 vtk polydata file.
+*        files into 1 vtk polydata file.The time is printfed into the command 
+*        line terminal. 
 * @param[in] argv[1] - number of threads for pthreading (look at 
 *            README for more information)
 * @param[in] argv[2] - the output's filename
