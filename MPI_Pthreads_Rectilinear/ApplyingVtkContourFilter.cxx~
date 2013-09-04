@@ -247,9 +247,6 @@ int main(int argc, char *argv[])
 
         pWriter->Write();
 
-        VT_USER_END("FINISH");
-        VT_OFF();
-
         double t2 = MPI_Wtime();
 
         double time = t2 - t1;

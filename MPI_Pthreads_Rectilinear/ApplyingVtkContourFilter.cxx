@@ -46,7 +46,7 @@
 #include <vtkCleanPolyData.h>
 #include <vtkMPIController.h>
 
-#include "/home/users/neto/NaokiEto/openmpi-install/include/mpi.h"
+#include <mpi.h>//"/home/users/neto/NaokiEto/openmpi-install/include/mpi.h"
 #include <stdio.h>
 #include <pthread.h>
 #include <time.h>
