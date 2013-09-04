@@ -1,0 +1,275 @@
+/**
+* Do whatever you want with public license
+* Version 2, Septeber 3, 2013
+*
+* Copyright (C) 2013 Naoki Eto <neto@lbl.gov>
+*
+* Everyone is permitted to copy and distribute verbatim or modified
+* copies of this license document, and changing it is allowed as long
+* as the name is changed.
+*
+* Do whatever you want with the public license
+*
+* TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+*
+* 0. You just do what you want to do.
+* 1. Uses VTK_MAJOR_VERSION <= 5
+* 
+*/
+/**
+* @file ApplyingVtkContourFilter.cxx
+* @author Naoki Eto
+* @date September 3, 2013
+* @brief This program gets the VTK files, assigns the appropriate VTK
+*        rectilinear file to the appropriate pthread (or POSIX thread), 
+*        passes the data through vtkContourFilter, which outputs the resulting 
+*        VTK polydata. The data is written in temporary files, which are sent 
+*        the parent thread, which then conglomerates the data in the temporary
+*        files into 1 vtk polydata file.
+* @param[in] argv[1] - number of threads for pthreading (look at 
+*            README for more information)
+* @param[in] argv[2] - the output's filename
+* @param[in] argv[3] - the prefix of the files (i.e. 27noise.vtk.)
+* @param[out] pWriter - vtkPolyData file with the output's filename
+* @return - EXIT_SUCCESS at the end
+*/
+
+#include <vtkSmartPointer.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataReader.h>
+#include <vtkPointData.h>
+#include <vtkPolyDataNormals.h>
+#include <vtkPolyDataWriter.h>
+#include <vtkAppendPolyData.h>
+#include <vtkCleanPolyData.h>
+
+#include "/work2/vt-system-install/include/vampirtrace/vt_user.h"
+#include <stdio.h>
+#include <pthread.h>
+#include <time.h>
+
+#include <vtkRectilinearGrid.h>
+#include <vtkRectilinearGridReader.h>
+
+#include <vtkContourFilter.h>
+#include <vtkPoints.h>
+
+/**
+ * This struct contains the id of the thread and the unique filename of the 
+ * vtk file that was found. This will be useful for determining the bounds 
+ * in the vtk data for each particular thread.
+*/
+typedef struct Param_Function
+{
+    const char * VTKinput;
+    int threadId;
+} params;
+
+/**
+ * This function takes in the appropriate vtk Rectilinear file and thread. The
+ * thread reads the file and applies vtkContourFilter to the data. vtk polydata
+ * is outputted, which are then written to temporary vtk polydata files. These 
+ * files are then sent to the parent thread. 
+*/
+void* thread_function(void* ptr)
+{
+    /* This is a struct variable that will be useful later on for determining
+       the particular vtk rectilinear data for each thread, as well as in the 
+       conglomeration of the pieces of vtk data */
+    params* NewPtr;
+    NewPtr = (params*) ptr;
+
+    VT_ON();
+    VT_USER_START("Region 1");
+
+    int NumOfCharPD = strlen(NewPtr->VTKinput) + 5 + 1;
+    int original = NumOfCharPD;
+
+    // figure out how many characters are in the temporary file name, 
+    if(NewPtr->threadId > 9)
+        NumOfCharPD += (int) log10(NewPtr->threadId);
+
+    char buf[(int) NumOfCharPD - original + 1];
+
+    sprintf(buf, "%d", NewPtr->threadId);
+
+    const char* suffix = ".vtk";
+
+    const char* prefix = NewPtr->VTKinput;
+
+    char prefix_suffix[NumOfCharPD];
+
+    strcpy(prefix_suffix, prefix);
+
+    strcat(prefix_suffix, buf);
+
+    strcat(prefix_suffix, suffix);
+
+    VT_USER_END("Region 1");
+    VT_OFF();
+
+    vtkRectilinearGridReader *reader = vtkRectilinearGridReader::New();
+
+    VT_ON();
+    VT_USER_START("Region 2");
+    
+    reader->SetFileName(prefix_suffix);
+
+    reader->Update();
+
+    // Create a grid
+    vtkSmartPointer<vtkRectilinearGrid> grid = reader->GetOutput();
+    reader->Delete();
+
+    vtkPointData* pointdata = grid->GetPointData();
+
+    double* range;
+
+    range = pointdata->GetArray("grad")->GetRange();
+
+    vtkContourFilter* contour = vtkContourFilter::New();
+
+    // name of array is "grad"
+    contour->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, "grad");
+
+    // better than setinput
+    contour->SetInputConnection(grid->GetProducerPort());
+
+    // woo 50 contours
+    contour->GenerateValues(50, range);
+
+    contour->ComputeNormalsOn();
+
+    contour->Update();
+
+    // calc cell normal
+    vtkPolyDataNormals *triangleCellNormals= vtkPolyDataNormals::New();
+
+    triangleCellNormals->SetInputConnection(contour->GetOutputPort());
+
+    triangleCellNormals->ComputeCellNormalsOn();
+    triangleCellNormals->ComputePointNormalsOff();
+    triangleCellNormals->ConsistencyOn();
+    triangleCellNormals->AutoOrientNormalsOn();
+    triangleCellNormals->Update(); // creates vtkPolyData
+
+    /* vtkPolyDataWriter for temporary file */
+    vtkPolyDataWriter *PDwriter = vtkPolyDataWriter::New();
+
+    /* This is for the temporary file names created. It contains the number 
+       of characters in the temporary filename "ShrimpChowFun#.vtk" */
+    int NumOfCharPD2 = 18;
+
+    // figure out how many characters are in the temporary file name, 
+    // i.e. "ShrimpChowFun128475.vtk"
+    if(NewPtr->threadId > 0)
+        NumOfCharPD2 = 18 + (int) log10(NewPtr->threadId);
+
+    char strPD[NumOfCharPD2];
+
+    sprintf(strPD, "ShrimpChowFun%d.vtk", NewPtr->threadId);
+
+    PDwriter->SetFileName(strPD);
+
+    PDwriter->SetInput(triangleCellNormals->GetOutput());
+
+    PDwriter->Write();
+
+    triangleCellNormals->Delete();
+    pointdata->Delete();
+
+    VT_USER_END("Region 4");
+    VT_OFF();
+}
+
+/**
+ * The main function calls the thread function. The vtkpolydata outputted 
+ * from these functions are collected and appended together to form one
+ * output vtkpolydata file.
+ */
+int main(int argc, char *argv[])
+{
+    struct timespec t0,t1;
+
+    clock_gettime(CLOCK_REALTIME,&t0);
+
+    /* Number of threads */
+    int size = atoi(argv[1]);
+
+    /* Array with elements of type params (the structure defined above) */
+    params thread_data_array[size];
+
+	pthread_t threads[size];
+
+	for (int f = 0; f < size; f++) {      
+        // Creating threads
+        // The file extension to look for is .f.vtk
+        std::string fileprefix = argv[3];
+
+        thread_data_array[f].VTKinput = fileprefix.c_str();
+        thread_data_array[f].threadId = f;
+		pthread_create(&threads[f], NULL, thread_function, (void*)&thread_data_array[f]);
+	}
+
+    // Joining threads to make sure all threads are terminated
+	for (int j = 0; j < size; j++)
+    {
+		pthread_join(threads[j], NULL);
+    }
+
+    VT_ON();
+    VT_USER_START("Region 5");
+
+    /* to append each piece into 1 big vtk file */
+    vtkAppendPolyData *appendWriter = vtkAppendPolyData::New();
+
+    // Go through the temporary files and append the vtk data
+    for(int k = 0; k < size; k++)
+    {
+        vtkPolyData *inputNum = vtkPolyData::New();
+        vtkPolyDataReader *readerPD = vtkPolyDataReader::New();
+
+        int NumOfCharPDPARENT = 18;
+
+        /* number of characters in file name */
+        if (k > 0)
+            NumOfCharPDPARENT = (int) log10(k) + 18;
+
+        char strPDPARENT[NumOfCharPDPARENT];
+
+        sprintf(strPDPARENT, "ShrimpChowFun%d.vtk", k);
+        readerPD->SetFileName(strPDPARENT);
+        readerPD->Update();
+        inputNum->ShallowCopy(readerPD->GetOutput());
+
+        appendWriter->AddInput(readerPD->GetOutput());
+
+        // remove temporary files
+        remove(strPDPARENT);
+
+        appendWriter->Update();
+
+        readerPD->Delete();
+        inputNum->Delete();
+    }
+
+    vtkPolyDataWriter *pWriter = vtkPolyDataWriter::New();
+    
+    // Output vtkpolydata file
+    pWriter->SetFileName(argv[2]);
+
+    pWriter->SetInput(appendWriter->GetOutput());
+
+    pWriter->Write();
+
+    VT_USER_END("Region 5");
+    VT_OFF();
+
+    clock_gettime(CLOCK_REALTIME,&t1);
+
+    double dt = (double) (t1.tv_sec - t0.tv_sec) + (double) (t1.tv_nsec - t0.tv_nsec) / 1.0e9;
+
+    printf("The measured time elapsed to be: %f\n", dt);
+
+    exit(0);
+}

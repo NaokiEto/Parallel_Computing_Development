@@ -1,0 +1,96 @@
+\hypertarget{ApplyingVtkContourFilter_8cxx}{\section{\-Applying\-Vtk\-Contour\-Filter.\-cxx \-File \-Reference}
+\label{ApplyingVtkContourFilter_8cxx}\index{\-Applying\-Vtk\-Contour\-Filter.\-cxx@{\-Applying\-Vtk\-Contour\-Filter.\-cxx}}
+}
+
+
+\-This program gets the \-V\-T\-K files, assigns the appropriate \-V\-T\-K rectilinear file to the appropriate pthread (or \-P\-O\-S\-I\-X thread)/\-M\-P\-I combination, and passes the data through vtk\-Contour\-Filter, which outputs the resulting \-V\-T\-K polydata. \-The data is sent to the parent thread, which then conglomerates the data into 1 vtk polydata. \-The parent thread then sends this data to the parent processor, which conglomerates all the data from all the parent pthreads into 1 vtk polydata file.  
+
+
+{\ttfamily \#include $<$vtk\-Smart\-Pointer.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Poly\-Data.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Poly\-Data\-Reader.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Point\-Data.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Poly\-Data\-Normals.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Poly\-Data\-Writer.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Append\-Poly\-Data.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Clean\-Poly\-Data.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-M\-P\-I\-Controller.\-h$>$}\*
+{\ttfamily \#include \char`\"{}/home/users/neto/\-Naoki\-Eto/openmpi-\/install/include/mpi.\-h\char`\"{}}\*
+{\ttfamily \#include $<$stdio.\-h$>$}\*
+{\ttfamily \#include $<$pthread.\-h$>$}\*
+{\ttfamily \#include \char`\"{}/home/users/neto/\-Naoki\-Eto/vt-\/install/include/vampirtrace/vt\-\_\-user.\-h\char`\"{}}\*
+{\ttfamily \#include $<$time.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Rectilinear\-Grid.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Rectilinear\-Grid\-Reader.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Contour\-Filter.\-h$>$}\*
+{\ttfamily \#include $<$vtk\-Points.\-h$>$}\*
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structParam__Function}{\-Param\-\_\-\-Function}
+\end{DoxyCompactItemize}
+\subsection*{\-Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{structParam__Function}{\-Param\-\_\-\-Function} \hyperlink{ApplyingVtkContourFilter_8cxx_ac6dc44d48cb54770fc01e6160a10766f}{params}
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void $\ast$ \hyperlink{ApplyingVtkContourFilter_8cxx_af721ef0a562fbb9e65194cf7f576582d}{thread\-\_\-function} (void $\ast$ptr)
+\item 
+\hypertarget{ApplyingVtkContourFilter_8cxx_a0ddf1224851353fc92bfbff6f499fa97}{int {\bfseries main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})}\label{ApplyingVtkContourFilter_8cxx_a0ddf1224851353fc92bfbff6f499fa97}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-This program gets the \-V\-T\-K files, assigns the appropriate \-V\-T\-K rectilinear file to the appropriate pthread (or \-P\-O\-S\-I\-X thread)/\-M\-P\-I combination, and passes the data through vtk\-Contour\-Filter, which outputs the resulting \-V\-T\-K polydata. \-The data is sent to the parent thread, which then conglomerates the data into 1 vtk polydata. \-The parent thread then sends this data to the parent processor, which conglomerates all the data from all the parent pthreads into 1 vtk polydata file. \-Do whatever you want with public license \-Version 2, \-September 3, 2013
+
+\-Copyright (\-C) 2013 \-Naoki \-Eto $<$\href{mailto:neto@lbl.gov}{\tt neto@lbl.\-gov}$>$
+
+\-Everyone is permitted to copy and distribute verbatim or modified copies of this license document, and changing it is allowed as long as the name is changed.
+
+\-Do whatever you want with the public license
+
+\-T\-E\-R\-M\-S \-A\-N\-D \-C\-O\-N\-D\-I\-T\-I\-O\-N\-S \-F\-O\-R \-C\-O\-P\-Y\-I\-N\-G, \-D\-I\-S\-T\-R\-I\-B\-U\-T\-I\-O\-N \-A\-N\-D \-M\-O\-D\-I\-F\-I\-C\-A\-T\-I\-O\-N
+
+0. \-You just do what you want to do. 1. \-Uses \-V\-T\-K\-\_\-\-M\-A\-J\-O\-R\-\_\-\-V\-E\-R\-S\-I\-O\-N $<$= 5
+
+\begin{DoxyAuthor}{\-Author}
+\-Naoki \-Eto 
+\end{DoxyAuthor}
+\begin{DoxyDate}{\-Date}
+\-September 3, 2013 
+\end{DoxyDate}
+
+\begin{DoxyParams}[1]{\-Parameters}
+\mbox{\tt in}  & {\em argv\mbox{[}1\mbox{]}} & -\/ number of threads for pthreading (look at \-R\-E\-A\-D\-M\-E for more information) \\
+\hline
+\mbox{\tt in}  & {\em argv\mbox{[}2\mbox{]}} & -\/ the output's filename \\
+\hline
+\mbox{\tt in}  & {\em argv\mbox{[}3\mbox{]}} & -\/ the prefix of the files (i.\-e. 27noise.\-vtk.) \\
+\hline
+\mbox{\tt out}  & {\em p\-Writer} & -\/ vtk\-Poly\-Data file with the output's filename \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+-\/ \-E\-X\-I\-T\-\_\-\-S\-U\-C\-C\-E\-S\-S at the end 
+\end{DoxyReturn}
+
+
+\subsection{\-Typedef \-Documentation}
+\hypertarget{ApplyingVtkContourFilter_8cxx_ac6dc44d48cb54770fc01e6160a10766f}{\index{\-Applying\-Vtk\-Contour\-Filter.\-cxx@{\-Applying\-Vtk\-Contour\-Filter.\-cxx}!params@{params}}
+\index{params@{params}!ApplyingVtkContourFilter.cxx@{\-Applying\-Vtk\-Contour\-Filter.\-cxx}}
+\subsubsection[{params}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf \-Param\-\_\-\-Function}  {\bf params}}}\label{ApplyingVtkContourFilter_8cxx_ac6dc44d48cb54770fc01e6160a10766f}
+\-This struct contains the id of the thread, the rank of the processor, the filename prefix of the vtk files, the number of total threads, and vtk poly data that has been outputted by vtk\-Contour\-Filter. \-This will be useful for determining which vtk file goes with which particular thread/processor combination. 
+
+\subsection{\-Function \-Documentation}
+\hypertarget{ApplyingVtkContourFilter_8cxx_af721ef0a562fbb9e65194cf7f576582d}{\index{\-Applying\-Vtk\-Contour\-Filter.\-cxx@{\-Applying\-Vtk\-Contour\-Filter.\-cxx}!thread\-\_\-function@{thread\-\_\-function}}
+\index{thread\-\_\-function@{thread\-\_\-function}!ApplyingVtkContourFilter.cxx@{\-Applying\-Vtk\-Contour\-Filter.\-cxx}}
+\subsubsection[{thread\-\_\-function}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ {\bf thread\-\_\-function} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)}}\label{ApplyingVtkContourFilter_8cxx_af721ef0a562fbb9e65194cf7f576582d}
+\-This function takes in the appropriate vtk \-Rectilinear file and thread/processor. \-The thread reads the file and applies vtk\-Contour\-Filter to the data. vtk polydata is outputted, and are then sent to the parent thread. 

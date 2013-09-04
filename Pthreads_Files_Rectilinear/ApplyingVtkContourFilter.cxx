@@ -55,9 +55,9 @@
 #include <vtkPoints.h>
 
 /**
- * This struct contains the id of the thread and the unique filename of the 
- * vtk file that was found. This will be useful for determining the bounds 
- * in the vtk data for each particular thread.
+ * This struct contains the id of the thread and the filename prefix of the 
+ * vtk files. This will be useful for determining which vtk file goes with
+ * which particular thread.
 */
 typedef struct Param_Function
 {
@@ -74,7 +74,8 @@ typedef struct Param_Function
 void* thread_function(void* ptr)
 {
     /* This is a struct variable that will be useful later on for determining
-       the bounds in the vtkpolydata for each thread. */
+       the particular vtk rectilinear data for each thread, as well as in the 
+       conglomeration of the pieces of vtk data */
     params* NewPtr;
     NewPtr = (params*) ptr;
 

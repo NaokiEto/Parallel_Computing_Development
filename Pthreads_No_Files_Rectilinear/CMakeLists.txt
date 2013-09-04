@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-PROJECT(ApplyingVtkMarchingCubes C CXX)
+PROJECT(ApplyingVtkContourFilter C CXX)
 
 set(VAMPIRTRACE_ROOT /work2/vt-install)
 set(VAMPIRTRACE_LIBRARIES ${VAMPIRTRACE_ROOT}/lib/libotfaux.so
@@ -18,18 +18,18 @@ include(${VTK_USE_FILE})
 
 find_package (Threads)
 
-add_executable(ApplyingVtkMarchingCubes ApplyingVtkMarchingCubes.cxx)
+add_executable(ApplyingVtkContourFilter ApplyingVtkContourFilter.cxx)
 
-target_link_libraries(ApplyingVtkMarchingCubes ${VAMPIRTRACE_LIBRARIES})
+target_link_libraries(ApplyingVtkContourFilter ${VAMPIRTRACE_LIBRARIES})
 
-target_link_libraries (ApplyingVtkMarchingCubes ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries (ApplyingVtkContourFilter ${CMAKE_THREAD_LIBS_INIT})
 
-target_link_libraries (ApplyingVtkMarchingCubes ${PTHREAD_LIBS})
+target_link_libraries (ApplyingVtkContourFilter ${PTHREAD_LIBS})
 
 if(VTK_LIBRARIES)
-  target_link_libraries(ApplyingVtkMarchingCubes ${VTK_LIBRARIES})
+  target_link_libraries(ApplyingVtkContourFilter ${VTK_LIBRARIES})
 else()
-  target_link_libraries(ApplyingVtkMarchingCubes vtkHybrid)
+  target_link_libraries(ApplyingVtkContourFilter vtkHybrid)
 endif()
 
-target_link_libraries (ApplyingVtkMarchingCubes -lrt)
+target_link_libraries (ApplyingVtkContourFilter -lrt)
