@@ -25,7 +25,8 @@
 *        passes the data through vtkContourFilter, which outputs the resulting 
 *        VTK polydata. The data is written in temporary files, which are sent 
 *        the parent thread, which then conglomerates the data in the temporary
-*        files into 1 vtk polydata file.
+*        files into 1 vtk polydata file.The time is printfed into the command 
+*        line terminal. 
 * @param[in] argv[1] - number of threads for pthreading (look at 
 *            README for more information)
 * @param[in] argv[2] - the output's filename
@@ -43,7 +44,6 @@
 #include <vtkAppendPolyData.h>
 #include <vtkCleanPolyData.h>
 
-#include "/work2/vt-system-install/include/vampirtrace/vt_user.h"
 #include <stdio.h>
 #include <pthread.h>
 #include <time.h>
@@ -79,9 +79,6 @@ void* thread_function(void* ptr)
     params* NewPtr;
     NewPtr = (params*) ptr;
 
-    VT_ON();
-    VT_USER_START("Region 1");
-
     int NumOfCharPD = strlen(NewPtr->VTKinput) + 5 + 1;
     int original = NumOfCharPD;
 
@@ -105,13 +102,7 @@ void* thread_function(void* ptr)
 
     strcat(prefix_suffix, suffix);
 
-    VT_USER_END("Region 1");
-    VT_OFF();
-
     vtkRectilinearGridReader *reader = vtkRectilinearGridReader::New();
-
-    VT_ON();
-    VT_USER_START("Region 2");
     
     reader->SetFileName(prefix_suffix);
 
@@ -177,9 +168,6 @@ void* thread_function(void* ptr)
 
     triangleCellNormals->Delete();
     pointdata->Delete();
-
-    VT_USER_END("Region 4");
-    VT_OFF();
 }
 
 /**
@@ -216,9 +204,6 @@ int main(int argc, char *argv[])
     {
 		pthread_join(threads[j], NULL);
     }
-
-    VT_ON();
-    VT_USER_START("Region 5");
 
     /* to append each piece into 1 big vtk file */
     vtkAppendPolyData *appendWriter = vtkAppendPolyData::New();

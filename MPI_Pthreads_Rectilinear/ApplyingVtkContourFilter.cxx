@@ -49,7 +49,6 @@
 #include "/home/users/neto/NaokiEto/openmpi-install/include/mpi.h"
 #include <stdio.h>
 #include <pthread.h>
-#include "/home/users/neto/NaokiEto/vt-install/include/vampirtrace/vt_user.h"
 #include <time.h>
 
 #include <vtkRectilinearGrid.h>
@@ -225,9 +224,6 @@ int main(int argc, char *argv[])
 
     if (MPI_rank == PARENT)
     {
-        VT_ON();
-        VT_USER_START("FINISH");
-
         // to append each piece into 1 big vtk file
         vtkAppendPolyData *appendWriterPARENT = vtkAppendPolyData::New();
 
@@ -250,9 +246,6 @@ int main(int argc, char *argv[])
             pWriter->SetInput(appendWriterPARENT->GetOutput());
 
         pWriter->Write();
-
-        VT_USER_END("FINISH");
-        VT_OFF();
 
         double t2 = MPI_Wtime();
 

@@ -44,7 +44,6 @@
 #include <vtkAppendPolyData.h>
 #include <vtkCleanPolyData.h>
 
-#include "/work2/vt-system-install/include/vampirtrace/vt_user.h"
 #include <stdio.h>
 #include <pthread.h>
 #include <time.h>
@@ -80,9 +79,6 @@ void* thread_function(void* ptr)
     params* NewPtr;
     NewPtr = (params*) ptr;
 
-    VT_ON();
-    VT_USER_START("Region 1");
-
     int NumOfCharPD = strlen(NewPtr->VTKinput) + 5 + 1;
     int original = NumOfCharPD;
 
@@ -106,13 +102,7 @@ void* thread_function(void* ptr)
 
     strcat(prefix_suffix, suffix);
 
-    VT_USER_END("Region 1");
-    VT_OFF();
-
     vtkRectilinearGridReader *reader = vtkRectilinearGridReader::New();
-
-    VT_ON();
-    VT_USER_START("Region 2");
     
     reader->SetFileName(prefix_suffix);
 
@@ -178,9 +168,6 @@ void* thread_function(void* ptr)
 
     triangleCellNormals->Delete();
     pointdata->Delete();
-
-    VT_USER_END("Region 4");
-    VT_OFF();
 }
 
 /**
@@ -217,9 +204,6 @@ int main(int argc, char *argv[])
     {
 		pthread_join(threads[j], NULL);
     }
-
-    VT_ON();
-    VT_USER_START("Region 5");
 
     /* to append each piece into 1 big vtk file */
     vtkAppendPolyData *appendWriter = vtkAppendPolyData::New();
@@ -262,9 +246,6 @@ int main(int argc, char *argv[])
     pWriter->SetInput(appendWriter->GetOutput());
 
     pWriter->Write();
-
-    VT_USER_END("Region 5");
-    VT_OFF();
 
     clock_gettime(CLOCK_REALTIME,&t1);
 

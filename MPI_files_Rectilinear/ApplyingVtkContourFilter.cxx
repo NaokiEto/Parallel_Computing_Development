@@ -46,7 +46,6 @@
 #include <vtkContourFilter.h>
 #include <vtkPoints.h>
 
-#include "/work2/vt-system-install/include/vampirtrace/vt_user.h"
 #include <mpi.h>
 #include <stdio.h>
 
@@ -98,9 +97,6 @@ int main(int argc, char *argv[])
 
         /* The vtk file extension we want to search for */
 
-        VT_ON();
-        VT_USER_START("Region 1");
-
         int NumOfCharIN = strlen(argv[2]) + 5 + 1;
         int original = NumOfCharIN;
 
@@ -123,12 +119,6 @@ int main(int argc, char *argv[])
         strcat(prefix_suffix, buf);
 
         strcat(prefix_suffix, suffix);
-
-        VT_USER_END("Region 1");
-        VT_OFF();
-
-        VT_ON();
-        VT_USER_START("Region 2");
 
         vtkRectilinearGridReader *reader = vtkRectilinearGridReader::New();
 
@@ -187,9 +177,6 @@ int main(int argc, char *argv[])
 
         triangleCellNormals->Delete();
         pointdata->Delete();
-
-        VT_USER_END("Region 4");
-        VT_OFF();
     }
 
     // Master
@@ -197,9 +184,6 @@ int main(int argc, char *argv[])
     {
         /* to append each piece into 1 big vtk file */
         vtkAppendPolyData *appendWriter = vtkAppendPolyData::New();
-
-        VT_ON();
-        VT_USER_START("Region 5");
 
         // Receive all the temporary file names
         for(int i = 1; i < size; i++)
@@ -243,9 +227,6 @@ int main(int argc, char *argv[])
         pWriter->SetInput(appendWriter->GetOutput());
 
         pWriter->Write();
-
-        VT_USER_END("Region 5");
-        VT_OFF();
 
         double t2 = MPI_Wtime();
 

@@ -45,7 +45,6 @@
 
 #include <mpi.h>//"/home/users/neto/mpich2-1.4.1p1-install/include/mpi.h"
 #include <stdio.h>
-#include "/work2/vt-system-install/include/vampirtrace/vt_user.h"
 
 #include <vtkRectilinearGrid.h>
 #include <vtkRectilinearGridReader.h>
@@ -57,9 +56,6 @@
 void process(int procRank, int procSize, vtkMPIController* procController, const char* fp)
 {
     /* The vtk file extension we want to search for */
-
-    //VT_ON();
-    //VT_USER_START("Region 1");
 
     int NumOfCharPD = strlen(fp) + 5 + 1;
     int original = NumOfCharPD;
@@ -83,9 +79,6 @@ void process(int procRank, int procSize, vtkMPIController* procController, const
     strcat(prefix_suffix, buf);
 
     strcat(prefix_suffix, suffix);
-
-    //VT_USER_END("Region 1");
-    //VT_OFF();
 
     vtkRectilinearGridReader *reader = vtkRectilinearGridReader::New();
 
@@ -171,9 +164,6 @@ int main(int argc, char *argv[])
     {   
         // to append each piece into 1 big vtk file
         vtkAppendPolyData *appendWriter = vtkAppendPolyData::New();
-
-        //VT_ON();
-        //VT_USER_START("Region 5");
 
         // go through the child processes, and append
         for(int k = 1; k < size; k++)

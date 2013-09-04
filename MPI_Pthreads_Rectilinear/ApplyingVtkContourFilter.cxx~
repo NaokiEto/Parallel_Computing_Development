@@ -27,7 +27,7 @@
 *        thread, which then conglomerates the data into 1 vtk polydata. The
 *        parent thread then sends this data to the parent processor, which
 *        conglomerates all the data from all the parent pthreads into 1 vtk
-*        polydata file.
+*        polydata file. The time is printfed into the command line terminal. 
 * @param[in] argv[1] - number of threads for pthreading (look at 
 *            README for more information)
 * @param[in] argv[2] - the output's filename
@@ -49,7 +49,6 @@
 #include "/home/users/neto/NaokiEto/openmpi-install/include/mpi.h"
 #include <stdio.h>
 #include <pthread.h>
-#include "/home/users/neto/NaokiEto/vt-install/include/vampirtrace/vt_user.h"
 #include <time.h>
 
 #include <vtkRectilinearGrid.h>
@@ -225,9 +224,6 @@ int main(int argc, char *argv[])
 
     if (MPI_rank == PARENT)
     {
-        VT_ON();
-        VT_USER_START("FINISH");
-
         // to append each piece into 1 big vtk file
         vtkAppendPolyData *appendWriterPARENT = vtkAppendPolyData::New();
 
