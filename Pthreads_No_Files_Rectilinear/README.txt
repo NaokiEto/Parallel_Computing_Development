@@ -3,10 +3,9 @@ following steps:
 
 get the VTK rectilinear files, assign the appropriate numbered file to the
 appropriate pthreads. The pthread reads the file and passes the
-data through vtkContourFilter. vtk polydata is outputted and then written 
-to a vtkpolydata temporary file. The file is then sent to the parent 
-pthread. The parent pthread then conglomerates all the files into 1 
-vtk polydata file.
+data through vtkContourFilter. vtk polydata is outputted and then sent to 
+the parent pthread. The parent pthread then conglomerates all the files 
+into 1 vtk polydata file.
 
 To run this program without bash script, we can do
 
