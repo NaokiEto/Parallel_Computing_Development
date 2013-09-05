@@ -200,6 +200,9 @@ int main(int argc, char *argv[])
 	    snprintf(strPD, 7, "%f \n", time);
 
         fputs(strPD, out_file);
+
+        fputs("\n", out_file);
+
         fclose(out_file);
     }
 

@@ -238,17 +238,21 @@ int main(int argc, char *argv[])
 
         double time = t2 - t1;
 
-        printf("MPI_Wtime measured the time elapsed to be: %f\n", time);
+        printf("MPI_Wtime measured the time elapsed to be: %f \n", time);
 
         FILE *out_file = fopen("../OutPutFile.txt", "a"); // write only 
 
         char strPDNew[6];
 
-    	snprintf(strPDNew, 7, "%f \n", time);
+    	snprintf(strPDNew, 7, "%f", time);
 
         fputs(strPDNew, out_file);
 
+        fputs("\n");
+
         remove(strPDNew);
+
+        remove(strPD);
 
         fclose(out_file);
     }
