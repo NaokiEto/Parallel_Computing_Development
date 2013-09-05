@@ -150,10 +150,14 @@ int main(int argc, char *argv[])
 
         contour->Update();
 
+        pointdata->Delete();
+
         // calc cell normal
         vtkPolyDataNormals *triangleCellNormals= vtkPolyDataNormals::New();
 
         triangleCellNormals->SetInputConnection(contour->GetOutputPort());
+
+        contour->Delete();
 
         triangleCellNormals->ComputeCellNormalsOn();
         triangleCellNormals->ComputePointNormalsOff();
@@ -172,14 +176,13 @@ int main(int argc, char *argv[])
 
         PDwriter->Write();
 
-        // Send this temporary file name to the master process
-        MPI_Send(strPD, NumOfCharPD, MPI_CHAR, 0, 1, MPI_COMM_WORLD);
-
         triangleCellNormals->Delete();
-        pointdata->Delete();
+
+        // Send this temporary file name to the parent process
+        MPI_Send(strPD, NumOfCharPD, MPI_CHAR, 0, 1, MPI_COMM_WORLD);
     }
 
-    // Master
+    // Parent
     else
     {
         /* to append each piece into 1 big vtk file */
@@ -200,19 +203,19 @@ int main(int argc, char *argv[])
             vtkPolyDataReader *reader = vtkPolyDataReader::New();
 
             /* number of characters in file name */
-            int NumOfCharPDMASTER = log10(k) + 18;
+            int NumOfCharPDPARENT = log10(k) + 18;
 
-            char strPDMASTER[NumOfCharPDMASTER];
+            char strPDPARENT[NumOfCharPDPARENT];
 
-            sprintf(strPDMASTER, "ShrimpChowFun%d.vtk", k);
-            reader->SetFileName(strPDMASTER);
+            sprintf(strPDPARENT, "ShrimpChowFun%d.vtk", k);
+            reader->SetFileName(strPDPARENT);
             reader->Update();
             inputNum->ShallowCopy(reader->GetOutput());
 
             appendWriter->AddInput(reader->GetOutput());
 
             // remove temporary files
-            remove(strPDMASTER);
+            remove(strPDPARENT);
 
             appendWriter->Update();
 
@@ -228,6 +231,9 @@ int main(int argc, char *argv[])
 
         pWriter->Write();
 
+        appendWriter->Delete();
+        pWriter->Delete();
+
         double t2 = MPI_Wtime();
 
         double time = t2 - t1;
@@ -236,15 +242,15 @@ int main(int argc, char *argv[])
 
         FILE *out_file = fopen("../OutPutFile.txt", "a"); // write only 
 
-        char strPD[6];
+        char strPDNew[6];
 
-	snprintf(strPD, 7, "%f \n", time);
+    	snprintf(strPDNew, 7, "%f \n", time);
 
-        fputs(strPD, out_file);
+        fputs(strPDNew, out_file);
+
+        remove(strPDNew);
+
         fclose(out_file);
-
-	//free(strPD);
-
     }
 
     MPI_Finalize();    

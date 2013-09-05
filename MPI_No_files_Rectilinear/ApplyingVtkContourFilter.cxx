@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
 
         char strPD[6];
 
-	snprintf(strPD, 7, "%f \n", time);
+	    snprintf(strPD, 7, "%f \n", time);
 
         fputs(strPD, out_file);
         fclose(out_file);
