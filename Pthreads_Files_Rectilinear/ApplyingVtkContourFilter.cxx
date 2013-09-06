@@ -63,6 +63,7 @@ typedef struct Param_Function
 {
     const char * VTKinput;
     int threadId;
+    pthread_mutex_t mutex;
 } params;
 
 /**
@@ -76,10 +77,6 @@ void* thread_function(void* ptr)
     /* This is a struct variable that will be useful later on for determining
        the particular vtk rectilinear data for each thread, as well as in the 
        conglomeration of the pieces of vtk data */
-
-    pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
-
-    pthread_mutex_lock( &mutex1 );
 
     params* NewPtr;
     NewPtr = (params*) ptr;
@@ -113,7 +110,7 @@ void* thread_function(void* ptr)
 
     reader->Update();
 
-    pthread_mutex_unlock( &mutex1 );
+    pthread_mutex_unlock( &(NewPtr->mutex) );
 
     // Create a grid
     vtkSmartPointer<vtkRectilinearGrid> grid = reader->GetOutput();
@@ -200,10 +197,15 @@ int main(int argc, char *argv[])
         // Creating threads
         // The file extension to look for is .f.vtk
 
+        pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+
+        pthread_mutex_lock( &mutex1 );
+
         std::string fileprefix = argv[3];
 
         thread_data_array[f].VTKinput = fileprefix.c_str();
         thread_data_array[f].threadId = f;
+        thread_data_array[f].mutex = mutex1;
 		pthread_create(&threads[f], NULL, thread_function, (void*)&thread_data_array[f]);
 	}
 
