@@ -189,9 +189,14 @@ int main(int argc, char *argv[])
 
 	pthread_t threads[size];
 
+    pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+
 	for (int f = 0; f < size; f++) {      
         // Creating threads
         // The file extension to look for is .f.vtk
+
+        pthread_mutex_lock( &mutex1 );
+
         std::string fileprefix = argv[3];
 
         thread_data_array[f].VTKinput = fileprefix.c_str();
@@ -246,9 +251,6 @@ int main(int argc, char *argv[])
     pWriter->SetInput(appendWriter->GetOutput());
 
     pWriter->Write();
-
-    VT_USER_END("Region 5");
-    VT_OFF();
 
     clock_gettime(CLOCK_REALTIME,&t1);
 

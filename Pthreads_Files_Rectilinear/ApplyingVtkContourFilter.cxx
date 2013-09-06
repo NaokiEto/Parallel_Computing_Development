@@ -189,14 +189,22 @@ int main(int argc, char *argv[])
 
 	pthread_t threads[size];
 
+    pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+
 	for (int f = 0; f < size; f++) {      
         // Creating threads
         // The file extension to look for is .f.vtk
+
+        pthread_mutex_lock( &mutex1 );
+
         std::string fileprefix = argv[3];
 
         thread_data_array[f].VTKinput = fileprefix.c_str();
         thread_data_array[f].threadId = f;
 		pthread_create(&threads[f], NULL, thread_function, (void*)&thread_data_array[f]);
+
+        pthread_mutex_unlock( &mutex1 );
+
 	}
 
     // Joining threads to make sure all threads are terminated
