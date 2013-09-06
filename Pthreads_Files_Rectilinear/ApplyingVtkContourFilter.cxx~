@@ -76,6 +76,11 @@ void* thread_function(void* ptr)
     /* This is a struct variable that will be useful later on for determining
        the particular vtk rectilinear data for each thread, as well as in the 
        conglomeration of the pieces of vtk data */
+
+    pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+
+    pthread_mutex_lock( &mutex1 );
+
     params* NewPtr;
     NewPtr = (params*) ptr;
 
@@ -189,13 +194,9 @@ int main(int argc, char *argv[])
 
 	pthread_t threads[size];
 
-    pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
-
 	for (int f = 0; f < size; f++) {      
         // Creating threads
         // The file extension to look for is .f.vtk
-
-        pthread_mutex_lock( &mutex1 );
 
         std::string fileprefix = argv[3];
 
@@ -208,6 +209,8 @@ int main(int argc, char *argv[])
 	for (int j = 0; j < size; j++)
     {
 		pthread_join(threads[j], NULL);
+
+        pthread_mutex_unlock( &mutex1 );
     }
 
     /* to append each piece into 1 big vtk file */
