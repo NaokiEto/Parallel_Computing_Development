@@ -81,7 +81,7 @@ void* thread_function(void* ptr)
     params* NewPtr;
     NewPtr = (params*) ptr;
 
-    int NumOfCharPD = strlen(NewPtr->VTKinput) + 5 + 1;
+    int NumOfCharPD = strlen(NewPtr->VTKinput) + 4 + 1;
     int original = NumOfCharPD;
 
     // figure out how many characters are in the temporary file name, 
